@@ -1,40 +1,47 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../vendor/autoload.php';
+// Incluir configuración y el autoloader de Composer
 require_once __DIR__ . '/../app/config.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Helpers\Translation;
 
-// Determinar el idioma: se verifica primero en POST (porque viene del select) y, si no, en GET; por defecto "en"
-$language = isset($_POST['lang']) ? $_POST['lang'] : (isset($_GET['lang']) ? $_GET['lang'] : 'en');
+// Determinar el idioma: primero se verifica si lo hay en GET, y luego por POST (en caso de que se envíe desde el formulario)
+// Por defecto se usa "en"
+$language = isset($_GET['lang']) ? $_GET['lang'] : (isset($_POST['lang']) ? $_POST['lang'] : 'en');
 
-// Instancia la traducción
+// Instanciar la clase Translation usando el CSV de traducciones.
+// Se asume que la carpeta "translations" se encuentra en el directorio raíz del proyecto.
 $translator = new Translation(__DIR__ . '/../translations/translations.csv', $language);
 
-// Ubicación del fichero de usuarios
+// Ubicación del archivo de usuarios (se guardarán en un JSON dentro de la carpeta storage)
 $usersFile = __DIR__ . '/../storage/users.json';
 
-// Mensaje de error
+// Inicializar el mensaje de error
 $message = '';
 
-// Procesa el formulario de login al enviar (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Actualizar el idioma según lo enviado (por si se cambió el idioma con el select)
+    $language = isset($_POST['lang']) ? $_POST['lang'] : $language;
+    // Reinstanciar el traductor para que use el idioma actualizado
+    $translator = new Translation(__DIR__ . '/../translations/translations.csv', $language);
+    
     $username = isset($_POST['username']) ? trim($_POST['username']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
-
-    // Cargamos los usuarios almacenados (si el archivo existe)
+    
+    // Cargar los usuarios desde el archivo JSON (si existe)
     if (file_exists($usersFile)) {
         $users = json_decode(file_get_contents($usersFile), true);
     } else {
         $users = [];
     }
-
-    // Si existe el usuario y la contraseña es válida, iniciamos sesión
+    
+    // Verificar si el usuario existe y si la contraseña es válida
     if (isset($users[$username]) && password_verify($password, $users[$username]['password'])) {
-        // Guardamos en la sesión tanto el usuario como el idioma seleccionado
+        // Credenciales correctas: guardar el nombre de usuario y el idioma seleccionado en la sesión
         $_SESSION['username'] = $username;
-        $_SESSION['language'] = $language; // Esto servirá para que las páginas siguientes usen este idioma
+        $_SESSION['language'] = $language;
         header("Location: " . BASE_URL . "/index.php");
         exit;
     } else {
@@ -71,14 +78,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Select para elegir el idioma -->
         <label for="lang">Idioma:</label>
         <select name="lang" id="lang" class="lang-select">
-            <option value="en" <?php if($language=="en") echo "selected"; ?>>English</option>
-            <option value="es" <?php if($language=="es") echo "selected"; ?>>Español</option>
-            <option value="fr" <?php if($language=="fr") echo "selected"; ?>>Français</option>
-            <option value="de" <?php if($language=="de") echo "selected"; ?>>Deutsch</option>
-            <option value="it" <?php if($language=="it") echo "selected"; ?>>Italiano</option>
-            <option value="ja" <?php if($language=="ja") echo "selected"; ?>>日本語</option>
-            <option value="ko" <?php if($language=="ko") echo "selected"; ?>>한국어</option>
-            <option value="zh" <?php if($language=="zh") echo "selected"; ?>>中文</option>
+            <option value="en" <?php if($language === 'en') echo "selected"; ?>>English</option>
+            <option value="es" <?php if($language === 'es') echo "selected"; ?>>Español</option>
+            <option value="fr" <?php if($language === 'fr') echo "selected"; ?>>Français</option>
+            <option value="de" <?php if($language === 'de') echo "selected"; ?>>Deutsch</option>
+            <option value="it" <?php if($language === 'it') echo "selected"; ?>>Italiano</option>
+            <option value="ja" <?php if($language === 'ja') echo "selected"; ?>>日本語</option>
+            <option value="ko" <?php if($language === 'ko') echo "selected"; ?>>한국어</option>
+            <option value="zh" <?php if($language === 'zh') echo "selected"; ?>>中文</option>
         </select>
         <br>
         <button type="submit"><?php echo htmlspecialchars($translator->get('login_button')); ?></button>
