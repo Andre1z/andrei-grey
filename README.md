@@ -62,6 +62,7 @@ Instalación
 
 Estructura del Proyecto
 ------------------------
+```
 andrei-grey/
 │
 ├── app/
@@ -89,6 +90,7 @@ andrei-grey/
 │
 ├── vendor/                # Dependencias instaladas a través de Composer
 └── README.md              # Este archivo de documentación
+```
 
 ----------------------------------------------------
 
