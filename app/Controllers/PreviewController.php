@@ -40,4 +40,3 @@ class PreviewController {
         include __DIR__ . '/../../public/views/preview.php';
     }
 }
-// Fin de la clase PreviewController
