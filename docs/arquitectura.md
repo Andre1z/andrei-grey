@@ -1,3 +1,6 @@
+# Estructura del proyecto
+
+```
 andrei-grey/
 ├── app/
 │   ├── config.php          # Configuración global y constantes (por ejemplo, BASE_URL)
@@ -20,3 +23,4 @@ andrei-grey/
 │   └── translations.csv    # Archivo CSV con las traducciones en múltiples idiomas
 ├── vendor/                # Dependencias instaladas a través de Composer
 └── README.md              # Documentación del proyecto
+```
