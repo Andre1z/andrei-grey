@@ -71,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?php echo htmlspecialchars($translator->get('login_title')); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/auth.css">
     <style>
         .lang-select {
             margin-left: 10px;

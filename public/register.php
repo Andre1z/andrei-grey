@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title><?php echo htmlspecialchars($translator->get('register_title')); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/auth.css">
 </head>
 <body>
     <h1><?php echo htmlspecialchars($translator->get('register_title')); ?></h1>
