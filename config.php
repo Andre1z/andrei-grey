@@ -1,4 +1,5 @@
 <?php
 $config = [
-    'db_name' => 'empresa.db'
+    'db_name' => 'data_migrator.db'
 ];
+?>
