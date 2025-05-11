@@ -58,7 +58,7 @@ $previewFile = isset($_GET['file']) ? $_GET['file'] : '';
                     <input type="file" name="ods_file" id="ods_file" required>
                 </div>
                 <div>
-                    <button type="submit"><?php echo htmlspecialchars($translator->get('login_button')); ?></button>
+                    <button type="submit"><?php echo htmlspecialchars($translator->get('Submit')); ?></button>
                 </div>
             </form>
         </section>
