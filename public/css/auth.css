@@ -1,0 +1,132 @@
+/* auth.css */
+
+/* Fondo y tipografía global */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: #fdf6e3; /* Off-white cálido */
+  color: #333;
+}
+
+/* Contenedor principal de autenticación */
+.container {
+  width: 100%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para títulos y encabezados */
+h1 {
+  font-size: 2em;
+  color: #d35400; /* Naranja cálido */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilos para las etiquetas (labels) */
+label {
+  display: block;
+  font-size: 0.9em;
+  margin: 10px 0 5px;
+  color: #555;
+}
+
+/* Estilos para inputs y select */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+/* Estilo del botón */
+button {
+  width: 100%;
+  background-color: #e67e22; /* Naranja cálido */
+  border: none;
+  color: #fff;
+  padding: 12px;
+  font-size: 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Efecto hover para el botón */
+button:hover {
+  background-color: #d35400; /* Un tono ligeramente más oscuro */
+}
+
+/* Estilos para enlaces */
+a {
+  color: #e67e22;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Mensajes de error */
+.error-message {
+  color: #c0392b;
+  background: #f9e5e3;
+  padding: 8px;
+  border: 1px solid #e74c3c;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Estilos generales para formularios de autenticación (login y registro) */
+.auth-form {
+  margin: 20px;
+}
+
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form .form-group {
+  margin-bottom: 15px;
+}
+
+.auth-form .form-group label {
+  margin-bottom: 5px;
+}
+
+.auth-form .form-group input,
+.auth-form .form-group select {
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Adaptaciones responsivas */
+@media (max-width: 480px) {
+  .container {
+    margin: 20px;
+    padding: 15px;
+  }
+  
+  h1 {
+    font-size: 1.5em;
+  }
+  
+  button {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+}
