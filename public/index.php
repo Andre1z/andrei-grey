@@ -34,7 +34,7 @@ if ($uri === BASE_URL . '/view') {
   </header>
   <main>
     <!-- Formulario para subir el archivo ODS -->
-    <form action="<?php echo BASE_URL; ?>/view" method="post" enctype="multipart/form-data">
+    <form action="<?php echo BASE_URL; ?>/view/preview.php" method="post" enctype="multipart/form-data">
       <div>
         <label for="ods_file"><?php echo htmlspecialchars($translator->get('enter_ods_url')); ?></label>
         <input type="file" name="ods_file" id="ods_file" required>
