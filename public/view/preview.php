@@ -44,7 +44,7 @@
     </table>
   </main>
   <footer>
-    <a href="/">Volver al inicio</a>
+    <a href="../index.php">Volver al inicio</a>
   </footer>
 </body>
 </html>
