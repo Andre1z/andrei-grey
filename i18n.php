@@ -1,52 +1,75 @@
 <?php
-// i18n.php
-
 /**
- * Loads translations from translations.csv into a global array.
- * Returns an associative array: [ 'key' => [ 'en' => '...', 'es' => '...', ...], ... ]
+ * Funciones para el parseo de fórmulas y para la internacionalización.
  */
-function loadTranslations() {
-    static $cached = null;
-    if ($cached !== null) {
-        return $cached;
-    }
-    $file = __DIR__ . '/translations.csv';
-    if (!file_exists($file)) {
-        // fallback: no translations
-        $cached = [];
-        return $cached;
-    }
 
-    $translations = [];
-    if (($handle = fopen($file, 'r')) !== false) {
-        // First row is the header
-        $header = fgetcsv($handle);
-        // e.g. $header = ['key','en','es','fr','de','it','ja','ko','zh']
-        while (($row = fgetcsv($handle)) !== false) {
-            $rowData = array_combine($header, $row);
-            $key = $rowData['key'];
-            // remove 'key' from row data
-            unset($rowData['key']);
-            $translations[$key] = $rowData;
-        }
-        fclose($handle);
-    }
+// Se reutiliza la función de parseo de fórmulas
+function parseOdsFormulaToPhp($odsFormula, $colMap = []) {
+    // (Utiliza el mismo contenido que en funciones/parseFormula.php)
+    $formula = preg_replace('/^of:=/i', '', trim($odsFormula));
+    $formula = preg_replace_callback(
+        '/
 
-    $cached = $translations;
-    return $cached;
+\[\.([A-Z]+)(\d+)\]
+
+/i',
+        function ($matches) use ($colMap) {
+            $colLetter = strtoupper($matches[1]);
+            if (isset($colMap[$colLetter])) {
+                $fieldName = $colMap[$colLetter];
+                return "\$this->cellVal(\$row['$fieldName'])";
+            } else {
+                return "/* unknown_col_$colLetter */ 0";
+            }
+        },
+        $formula
+    );
+    $mapFunctions = [
+        '/\bSUM\s*\(/i'   => '$this->sum(',
+        '/\bROUND\s*\(/i' => '$this->round(',
+    ];
+    foreach ($mapFunctions as $pattern => $replace) {
+        $formula = preg_replace($pattern, $replace, $formula);
+    }
+    return $formula;
+}
+
+function cellVal($val) {
+    $num = preg_replace('/[^0-9.\-]+/', '', $val);
+    return floatval($num);
+}
+
+function sum(...$vals) {
+    $total = 0;
+    foreach ($vals as $v) {
+        $total += $v;
+    }
+    return $total;
+}
+
+function roundVal($val, $precision = 0) {
+    return round($val, $precision);
 }
 
 /**
- * t($key) returns the translation string according to $_SESSION['lang'], or fallback to 'en'.
+ * Función simple de traducción que utiliza el archivo translations.csv.
  */
 function t($key) {
-    $all = loadTranslations();
-    $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'en'; // default to English
-    if (isset($all[$key])) {
-        // If there's a translation for the chosen language, use it; else fallback to English
-        return $all[$key][$lang] ?? $all[$key]['en'];
+    static $translations = null;
+    if ($translations === null && file_exists(__DIR__ . '/../translations.csv')) {
+        $translations = [];
+        if (($handle = fopen(__DIR__ . '/../translations.csv', "r")) !== false) {
+            $header = fgetcsv($handle, 1000, ",");
+            while (($data = fgetcsv($handle, 1000, ",")) !== false) {
+                $translations[$data[0]] = array_combine($header, $data);
+            }
+            fclose($handle);
+        }
     }
-    // if key not found, just return the key for debugging
+    $lang = $_SESSION['lang'] ?? 'en';
+    if (isset($translations[$key]) && isset($translations[$key][$lang])) {
+        return $translations[$key][$lang];
+    }
     return $key;
 }
-
+?>

@@ -1,25 +1,22 @@
 <?php
-// importador.php
 session_start();
-require_once 'i18n.php';  // load translations
+require_once 'i18n.php';
 require 'funciones/odsasqlite.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_POST['import_step'] === '1') {
-    // ------------------- STEP 1: PROCESS ODS IMPORT -------------------
+    // Paso 1: Procesar la importación del ODS
     $url = $_POST['url'];
-    $nombre = trim($_POST['nombre']);
-    if (empty($url) || empty($nombre)) {
+    $dbName = trim($_POST['nombre']);
+    if (empty($url) || empty($dbName)) {
         $error = t("error_both_required");
     } else {
-        // 1) Import the ODS file
-        odsasqlite($url, $nombre);
-
-        // 2) Create a config file
-        $configContent = "<?php\n\$config = [\n    'db_name' => '" . addslashes($nombre) . ".db'\n];\n";
+        // Importar el archivo ODS
+        odsasqlite($url, $dbName);
+        // Crear el archivo de configuración
+        $configContent = "<?php\n\$config = [\n    'db_name' => '" . addslashes($dbName) . ".db'\n];\n";
         file_put_contents("config.php", $configContent);
-
-        // 3) Create initial 'users' table and seed a default user
-        $db = new SQLite3($nombre . ".db");
+        // Crear tabla de usuarios y semilla un usuario por defecto
+        $db = new SQLite3($dbName . ".db");
         $db->exec("CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
@@ -27,18 +24,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
             username TEXT,
             password TEXT
         )");
-        $check = $db->query("SELECT COUNT(*) as count FROM users WHERE username = 'jocarsa'");
+        $check = $db->query("SELECT COUNT(*) as count FROM users WHERE username = 'defaultuser'");
         $row = $check->fetchArray(SQLITE3_ASSOC);
         if ($row['count'] == 0) {
             $db->exec("INSERT INTO users (name, email, username, password) VALUES (
-                'Jose Vicente Carratala',
-                'info@josevicentecarratala.com',
-                'jocarsa',
-                'jocarsa'
+                'Default User',
+                'user@example.com',
+                'defaultuser',
+                'defaultpass'
             )");
         }
-
-        // 4) Create DEPARTMENTS table + DEPARTMENT_TABLES relationship table
+        // Crear tablas para departamentos
         $db->exec("CREATE TABLE IF NOT EXISTS departments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT
@@ -47,15 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
             department_id INTEGER,
             table_name TEXT
         )");
-
-        // Move to step 2 of the installer (department creation)
-        $_SESSION['installer_dbname'] = $nombre . ".db";
+        // Pasar al Paso 2: creación de departamentos
+        $_SESSION['installer_dbname'] = $dbName . ".db";
         header("Location: importador.php?step=2");
         exit;
     }
 }
 
-// ------------------- STEP 2: CREATE DEPARTMENTS & LINK TABLES -------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_POST['import_step'] === '2') {
     $dbName = $_SESSION['installer_dbname'] ?? null;
     if (!$dbName) {
@@ -63,16 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
         exit;
     }
     $db = new SQLite3($dbName);
-
-    // 1) Insert the new department
+    // Insertar el nuevo departamento
     $departmentName = trim($_POST['department_name']);
     if (!empty($departmentName)) {
         $stmt = $db->prepare("INSERT INTO departments (name) VALUES (:name)");
         $stmt->bindValue(':name', $departmentName, SQLITE3_TEXT);
         $stmt->execute();
         $departmentId = $db->lastInsertRowID();
-
-        // 2) Insert checkboxes for the selected tables
+        // Insertar las relaciones de tablas seleccionadas
         if (isset($_POST['tables']) && is_array($_POST['tables'])) {
             foreach ($_POST['tables'] as $tableName) {
                 $stmt2 = $db->prepare("INSERT INTO department_tables (department_id, table_name) VALUES (:depId, :tbl)");
@@ -84,8 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
         $success = t("Department created successfully!");
     }
 }
-
-// Now show the form based on ?step=2 or the result
 ?>
 <!doctype html>
 <html>
@@ -97,13 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
 <body>
 <div class="header">
     <div id="corporativo">
-        <img src="grey.png" alt="Logo">
+        <img src="logo.png" alt="Logo">
         <h1><?php echo t("importer_title"); ?></h1>
     </div>
 </div>
 
 <?php if (!isset($_GET['step'])): ?>
-    <!-- ================= STEP 1: ODS IMPORT FORM ================== -->
+    <!-- Paso 1: Formulario de importación ODS -->
     <div class="importador-container">
         <?php if(isset($error)): ?>
             <p class="message-error"><?php echo $error; ?></p>
@@ -112,10 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
             <input type="hidden" name="import_step" value="1">
             <h3><?php echo t("importer_heading"); ?></h3>
             <p class="importador-description">
-                <?php 
-                    // Inform user about extended foreign key support
-                    echo t("importer_description") . " " . "Note: Foreign keys now support multi-column display.";
-                ?>
+                <?php echo t("importer_description") . " Note: Extended foreign key support enabled."; ?>
             </p>
             <div class="form-group">
                 <label><?php echo t("enter_ods_url"); ?></label>
@@ -127,23 +114,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
             </div>
             <input type="submit" value="Import" class="btn-submit">
             <p class="example-url">
-                Example URL: https://docs.google.com/spreadsheets/...
+                Example URL: https://example.com/path/to/file.ods
             </p>
         </form>
     </div>
 
 <?php elseif ($_GET['step'] == 2): ?>
-    <!-- ============= STEP 2: DEPARTMENTS CREATION FORM ============= -->
+    <!-- Paso 2: Formulario de creación de Departamento -->
     <?php
     $dbName = $_SESSION['installer_dbname'] ?? null;
     if ($dbName) {
         $db = new SQLite3($dbName);
-
-        // Get a list of the tables from the DB
         $result = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
         $tables = [];
         while($row = $result->fetchArray(SQLITE3_ASSOC)) {
-            // Exclude 'departments', 'department_tables', and 'users' from the checkboxes:
             if (!in_array($row['name'], ['departments','department_tables','users'])) {
                 $tables[] = $row['name'];
             }
@@ -170,11 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['import_step']) && $_P
             </div>
             <input type="submit" value="Add Department" class="btn-submit">
         </form>
-
         <hr>
         <p>When you’re done creating departments, <a href="index.php" class="btn">Go to Dashboard</a></p>
     </div>
 <?php endif; ?>
 </body>
 </html>
-
