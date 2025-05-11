@@ -32,7 +32,9 @@ header h1 {
 /* ============================= */
 /* ESTILOS PRINCIPALES DEL FORMULARIO */
 /* ============================= */
-form {
+/* Aplica solo a páginas en las que el body NO tenga la clase "auth" */
+/* De este modo, las páginas de Login y Registro (que tendrán body.auth) NO se verán afectadas */
+body:not(.auth) form {
   max-width: 600px;
   margin: 0 auto 20px auto;
   background-color: #fff;
@@ -41,27 +43,27 @@ form {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-form div {
+body:not(.auth) form div {
   margin-bottom: 15px;
 }
 
-form label {
+body:not(.auth) form label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
 }
 
-form input[type="file"],
-form input[type="text"],
-form input[type="email"],
-form input[type="password"] {
+body:not(.auth) form input[type="file"],
+body:not(.auth) form input[type="text"],
+body:not(.auth) form input[type="email"],
+body:not(.auth) form input[type="password"] {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
 }
 
-form button[type="submit"] {
+body:not(.auth) form button[type="submit"] {
   background-color: #007bff;
   color: #fff;
   border: none;
@@ -70,9 +72,10 @@ form button[type="submit"] {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-top: 15px; /* Separación superior añadida para que no esté tan pegado al label anterior */
 }
 
-form button[type="submit"]:hover {
+body:not(.auth) form button[type="submit"]:hover {
   background-color: #0056b3;
 }
 

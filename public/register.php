@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/auth.css">
 </head>
-<body>
+<body class="auth">
     <h1><?php echo htmlspecialchars($translator->get('register_title')); ?></h1>
     <?php if (!empty($message)): ?>
         <p style="color:red;"><?php echo htmlspecialchars($message); ?></p>

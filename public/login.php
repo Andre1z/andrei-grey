@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body>
+<body class="auth">
     <h1><?php echo htmlspecialchars($translator->get('login_title')); ?></h1>
     <?php if (!empty($message)): ?>
         <p style="color:red;"><?php echo htmlspecialchars($message); ?></p>

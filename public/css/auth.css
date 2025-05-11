@@ -125,8 +125,17 @@ a:hover {
     font-size: 1.5em;
   }
   
-  button {
-    padding: 10px;
-    font-size: 0.9em;
+  /* Estilo del botón */
+  .auth button {
+  width: 100% !important;
+  background-color: #e67e22 !important;  /* Naranja cálido */
+  border: none !important;
+  color: #fff !important;
+  padding: 12px !important;
+  font-size: 1em !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
+  margin-top:10px;
   }
 }
