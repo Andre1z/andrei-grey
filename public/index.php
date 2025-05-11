@@ -1,77 +1,90 @@
 <?php
-// public/index.php
+session_start();
 
-// Cargar el autoloader de Composer y la configuración global
+// Si el usuario no está logueado, redirige a login.php
+if (!isset($_SESSION['username'])) {
+    header("Location: " . BASE_URL . "/login.php");
+    exit;
+}
+
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/config.php';
 
 use App\Controllers\FileController;
 use App\Helpers\Translation;
 
-// Gestión del idioma (se puede establecer con ?lang=es en la URL)
-$language   = isset($_GET['lang']) ? $_GET['lang'] : 'en';
+// Se toma el idioma desde la sesión; si no existe, se asigna "en" por defecto
+$language = isset($_SESSION['language']) ? $_SESSION['language'] : 'en';
+
+// Instanciar la clase de traducciones usando el archivo translations.csv
 $translator = new Translation(__DIR__ . '/../translations/translations.csv', $language);
 
-// Si se envía el formulario (método POST) procesamos la subida
+// Procesar la subida del archivo si se envía el formulario vía POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['ods_file'])) {
     $fileController = new FileController();
-    // Se asume que upload() ha sido modificado para retornar el nombre del archivo subido
+    // Se asume que el método upload() retorna el nombre del archivo subido en caso de éxito
     $uploadedFile = $fileController->upload();
     if ($uploadedFile) {
-        // Redirige a index.php pasando el nombre del archivo para la previsualización
         header("Location: " . BASE_URL . "/index.php?file=" . urlencode($uploadedFile));
         exit;
     }
 }
 
-// Obtenemos la variable opcional "file" para saber si hay un archivo a previsualizar
+// Si se pasa el parámetro "file" en la URL, se usará para mostrar la previsualización
 $previewFile = isset($_GET['file']) ? $_GET['file'] : '';
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo htmlspecialchars($language); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($translator->get('Andrei | Grey')); ?></title>
+    <title><?php echo htmlspecialchars($translator->get('dashboard_title')); ?></title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css">
 </head>
 <body>
     <header>
-        <h1><?php echo htmlspecialchars($translator->get('Andrei | Grey')); ?></h1>
+        <h1><?php echo htmlspecialchars($translator->get('dashboard_title')); ?></h1>
+        <p><?php echo htmlspecialchars($translator->get('hello')); ?>, <?php echo htmlspecialchars($_SESSION['username']); ?>!</p>
+        <p><a href="<?php echo BASE_URL; ?>/logout.php"><?php echo htmlspecialchars($translator->get('logout')); ?></a></p>
     </header>
     <main>
-        <!-- Formulario para subir el archivo ODS -->
-        <form action="<?php echo BASE_URL; ?>/index.php" method="post" enctype="multipart/form-data">
-            <div>
-                <label for="ods_file"><?php echo htmlspecialchars($translator->get('Seleccione un archivo .ods')); ?></label>
-                <input type="file" name="ods_file" id="ods_file" required>
-            </div>
-            <div>
-                <button type="submit"><?php echo htmlspecialchars($translator->get('Submit')); ?></button>
-            </div>
-        </form>
-
-        <!-- Si se subió un archivo, mostramos su previsualización en un iframe -->
-        <?php if (!empty($previewFile)): ?>
-            <h2>Vista previa del archivo: <?php echo htmlspecialchars($previewFile); ?></h2>
-            <iframe style="width:100%; height:500px;" src="<?php echo BASE_URL; ?>/view/preview.php?file=<?php echo urlencode($previewFile); ?>"></iframe>
-        <?php endif; ?>
-
-        <!-- Sección para listar todos los archivos subidos -->
+        <!-- Sección de importación (formulario para subir el archivo ODS) -->
         <section>
-            <h2>Archivos subidos</h2>
+            <h2><?php echo htmlspecialchars($translator->get('importer_title')); ?></h2>
+            <form action="<?php echo BASE_URL; ?>/index.php" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="ods_file"><?php echo htmlspecialchars($translator->get('enter_ods_url')); ?></label>
+                    <input type="file" name="ods_file" id="ods_file" required>
+                </div>
+                <div>
+                    <button type="submit"><?php echo htmlspecialchars($translator->get('login_button')); ?></button>
+                </div>
+            </form>
+        </section>
+        
+        <!-- Si se ha subido un archivo, se muestra la previsualización en un iframe -->
+        <?php if (!empty($previewFile)): ?>
+        <section>
+            <h2><?php echo htmlspecialchars($translator->get('importer_heading')); ?></h2>
+            <iframe style="width:100%; height:500px;" src="<?php echo BASE_URL; ?>/view/preview.php?file=<?php echo urlencode($previewFile); ?>"></iframe>
+        </section>
+        <?php endif; ?>
+        
+        <!-- Sección para listar los archivos subidos -->
+        <section>
+            <h2><?php echo htmlspecialchars($translator->get('tables')); ?></h2>
             <ul>
                 <?php
-                // Obtiene la ruta física a la carpeta de uploads
+                // Ruta física a la carpeta de uploads
                 $uploadsDir = __DIR__ . '/uploads/';
                 if (is_dir($uploadsDir)) {
                     $files = array_diff(scandir($uploadsDir), array('..', '.'));
                     foreach ($files as $file) {
-                        // El enlace redirige a index.php con ?file= para mostrar su preview
                         echo '<li><a href="' . BASE_URL . '/index.php?file=' . urlencode($file) . '">' . htmlspecialchars($file) . '</a></li>';
                     }
                 } else {
-                    echo '<li>No hay archivos subidos.</li>';
+                    echo '<li>' . htmlspecialchars("No hay archivos subidos.") . '</li>';
                 }
                 ?>
             </ul>
