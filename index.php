@@ -2,26 +2,26 @@
 session_start();
 require_once 'i18n.php';
 
-// If config does not exist, redirect to the importer
+// Si no existe la configuración, redirigir al importador
 if (!file_exists('config.php')) {
     header("Location: importador.php");
     exit;
 }
 require 'config.php';
 
-// Handle language selection
+// Manejar la selección de idioma
 if (isset($_POST['lang']) && !empty($_POST['lang'])) {
     $_SESSION['lang'] = $_POST['lang'];
 }
 
-// Handle logout
+// Manejar cierre de sesión
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     session_destroy();
     header("Location: index.php");
     exit;
 }
 
-// 1) Handle login if not already logged in
+// 1) Manejar el login si el usuario no está autenticado
 if (!isset($_SESSION['loggedin'])) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         $db = new SQLite3($config['db_name']);
@@ -38,7 +38,7 @@ if (!isset($_SESSION['loggedin'])) {
         }
     }
     if (!isset($_SESSION['loggedin'])) {
-        // Show the login form and exit
+        // Mostrar el formulario de login y finalizar ejecución
         ?>
         <!doctype html>
         <html>
@@ -50,8 +50,8 @@ if (!isset($_SESSION['loggedin'])) {
         <body>
             <div class="header">
                 <div id="corporativo">
-                    <img src="grey.png" alt="Logo">
-                    <h1>jocarsa | grey - <?php echo t("login_title"); ?></h1>
+                    <img src="logo.png" alt="Logo">
+                    <h1>DataMigrator Dashboard - <?php echo t("login_title"); ?></h1>
                 </div>
             </div>
             <div class="container contenedorlogin">
@@ -75,10 +75,8 @@ if (!isset($_SESSION['loggedin'])) {
                             <option value="de">Deutsch</option>
                             <option value="it">Italiano</option>
                             <option value="ja">日本語</option>
-                            <option value="ko">한국어</option>
-                            <option value="zh">中文</option>
                         </select>
-                        
+                        <br><br>
                         <input type="submit" name="login" value="<?php echo t("login_button"); ?>">
                     </form>
                 </div>
@@ -89,6 +87,10 @@ if (!isset($_SESSION['loggedin'])) {
         exit;
     }
 }
+
+// Aquí iría el resto del código para usuarios autenticados
+echo "User is authenticated. Welcome, " . htmlspecialchars($_SESSION['username']) . "!";
+
 
 // 2) If we reach here, user is logged in
 $db = new SQLite3($config['db_name']);
@@ -488,4 +490,3 @@ if ($selected_table && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </body>
 </html>
-
