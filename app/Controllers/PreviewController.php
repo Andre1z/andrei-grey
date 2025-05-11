@@ -2,20 +2,19 @@
 namespace App\Controllers;
 
 use PhpOffice\PhpSpreadsheet\Reader\Ods;
-use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Html;
 use Exception;
 
 class PreviewController {
 
     /**
-     * Lee el archivo (ODS o Excel) ubicado en uploads y lo muestra en pantalla como HTML.
+     * Extrae el contenido del archivo ODS y carga la vista de previsualización.
      *
-     * @param string $fileName Nombre del archivo a visualizar.
+     * @param string $fileName Nombre del archivo ODS a visualizar.
      * @return void
      */
     public function preview(string $fileName): void {
-        // Directorio donde se suben los archivos (asegúrate de que sea correcto)
+        // Definir la carpeta donde se encuentran los archivos subidos
+        // Observa que el archivo subido se encuentra en /public/uploads/
         $uploadsDir = __DIR__ . '/../../public/uploads/';
         $filePath = $uploadsDir . $fileName;
 
@@ -25,31 +24,21 @@ class PreviewController {
             exit;
         }
 
-        // Determinar la extensión del archivo para elegir el lector apropiado
-        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        if ($extension === 'ods') {
-            $reader = new Ods();
-        } elseif (in_array($extension, ['xlsx', 'xls'])) {
-            $reader = new Xlsx();
-        } else {
-            echo "Tipo de archivo no soportado: " . htmlspecialchars($extension);
-            exit;
-        }
+        // Instanciar el lector ODS
+        $reader = new Ods();
 
         try {
             $spreadsheet = $reader->load($filePath);
         } catch (Exception $e) {
-            echo "Error al cargar el archivo: " . $e->getMessage();
+            echo "Error al leer el archivo ODS: " . $e->getMessage();
             exit;
         }
 
-        // Usar el escritor HTML para renderizar el contenido en pantalla
-        $writer = new Html($spreadsheet);
-        $writer->setSheetIndex(0); // Opcional: seleccionar la primera hoja
+        // Convertir la hoja activa a un array
+        $data = $spreadsheet->getActiveSheet()->toArray();
 
-        // Establecer las cabeceras para salida HTML
-        header('Content-Type: text/html; charset=utf-8');
-        $writer->save('php://output');
-        exit;
+        // Incluir la vista de previsualización.
+        // Se asume que la vista se encuentra en: public/view/preview.php
+        include __DIR__ . '/../../public/view/preview.php';
     }
 }
