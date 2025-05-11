@@ -34,3 +34,6 @@ date_default_timezone_set('Europe/Madrid');
 
 // Ejemplo adicional: Configuración de una constante para la versión de la aplicación
 define('APP_VERSION', '1.0.0');
+
+define('BASE_URL', '/andrei-grey/andrei-grey/public');
+// Definir la URL base para el acceso a los archivos subidos

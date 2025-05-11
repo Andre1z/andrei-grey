@@ -1,7 +1,6 @@
 <?php
 // public/index.php
 
-// Cargar el autoloader de Composer y la configuración global
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../app/config.php';
 
@@ -9,22 +8,18 @@ use App\Controllers\FileController;
 use App\Controllers\PreviewController;
 use App\Helpers\Translation;
 
-// Gestión del idioma (se puede establecer con ?lang=es en la URL)
 $language = isset($_GET['lang']) ? $_GET['lang'] : 'en';
 $translator = new Translation(__DIR__ . '/../translations/translations.csv', $language);
 
-// Obtener la ruta de la petición
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Ruta para previsualizar un archivo: /preview?file=nombre.ods
-if ($uri === '/preview' && isset($_GET['file'])) {
+if ($uri === BASE_URL . '/preview' && isset($_GET['file'])) {
     $previewController = new PreviewController();
     $previewController->preview($_GET['file']);
     exit;
 }
 
-// Ruta para la carga y transformación del archivo: /upload
-if ($uri === '/upload') {
+if ($uri === BASE_URL . '/uploads') {
     $fileController = new FileController();
     $fileController->upload();
     exit;
@@ -45,8 +40,7 @@ if ($uri === '/upload') {
     </header>
     <main>
         <!-- Formulario para subir el archivo ODS -->
-        <!-- Nota: la acción se corrige a "/upload" para que se dispare la ruta correspondiente -->
-        <form action="uploads" method="post" enctype="multipart/form-data">
+        <form action="<?php echo BASE_URL; ?>/uploads" method="post" enctype="multipart/form-data">
             <div>
                 <label for="ods_file"><?php echo htmlspecialchars($translator->get('enter_ods_url')); ?></label>
                 <input type="file" name="ods_file" id="ods_file" required>
@@ -56,7 +50,7 @@ if ($uri === '/upload') {
             </div>
         </form>
 
-        <!-- Sección para listar los archivos subidos y permitir previsualizarlos -->
+        <!-- Sección para listar los archivos subidos -->
         <section>
             <h2>Archivos subidos</h2>
             <ul>
@@ -65,8 +59,7 @@ if ($uri === '/upload') {
                 if (is_dir($uploadsDir)) {
                     $files = array_diff(scandir($uploadsDir), array('..', '.'));
                     foreach ($files as $file) {
-                        // Se genera un enlace a la función de previsualización (por ejemplo: /preview?file=test.ods)
-                        echo '<li><a href="/preview?file=' . urlencode($file) . '">' . htmlspecialchars($file) . '</a></li>';
+                        echo '<li><a href="' . BASE_URL . '/preview?file=' . urlencode($file) . '">' . htmlspecialchars($file) . '</a></li>';
                     }
                 } else {
                     echo '<li>No hay archivos subidos.</li>';

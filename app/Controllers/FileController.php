@@ -9,7 +9,7 @@ use App\Services\TransformationService;
  * Este controlador gestiona la carga y procesamiento de archivos ODS.
  */
 class FileController {
-    
+
     /**
      * Maneja la carga del archivo ODS y llama al servicio de transformación.
      *
@@ -22,11 +22,14 @@ class FileController {
         // Verificar que la solicitud sea POST y se haya enviado el archivo
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['ods_file'])) {
             $fileTmpPath = $_FILES['ods_file']['tmp_name'];
-            $fileName    = $_FILES['ods_file']['name'];
-            // Definir el directorio destino para los archivos subidos
+
+            // Sanitizamos el nombre del archivo para evitar posibles vulnerabilidades
+            $fileName = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $_FILES['ods_file']['name']);
+
+            // Definir el directorio destino para los archivos subidos (ubicado en public/uploads/)
             $uploadsDir = __DIR__ . '/../../public/uploads/';
             
-            // Se asegura de que el directorio de uploads exista
+            // Se asegura de que el directorio de uploads exista, creándolo si es necesario
             if (!is_dir($uploadsDir)) {
                 mkdir($uploadsDir, 0755, true);
             }
@@ -34,7 +37,7 @@ class FileController {
             // Ruta completa destino del archivo subido
             $destinationPath = $uploadsDir . $fileName;
 
-            // Mover el archivo a la carpeta de uploads
+            // Mover el archivo desde la ubicación temporal a la carpeta de uploads
             if (move_uploaded_file($fileTmpPath, $destinationPath)) {
                 try {
                     // Instanciar el servicio de transformación y procesar el archivo ODS
