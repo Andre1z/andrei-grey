@@ -45,7 +45,8 @@ if ($uri === '/upload') {
     </header>
     <main>
         <!-- Formulario para subir el archivo ODS -->
-        <form action="uploads" method="post" enctype="multipart/form-data">
+        <!-- Nota: la acción se corrige a "/upload" para que se dispare la ruta correspondiente -->
+        <form action="/upload" method="post" enctype="multipart/form-data">
             <div>
                 <label for="ods_file"><?php echo htmlspecialchars($translator->get('enter_ods_url')); ?></label>
                 <input type="file" name="ods_file" id="ods_file" required>
