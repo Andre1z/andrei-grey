@@ -24,3 +24,5 @@ register_password_mismatch,Passwords do not match.,Las contraseñas no coinciden
 register_user_exists,User already exists.,El usuario ya existe.,L'utilisateur existe déjà.,Benutzer existiert bereits.,L'utente esiste già.,すでにそのユーザーは存在します。,이미 존재하는 사용자입니다。,用户已存在。
 register_error_saving,Error saving user.,Error al guardar el usuario.,Erreur lors de l'enregistrement de l'utilisateur.,Fehler beim Speichern des Benutzers.,Errore nel salvataggio dell'utente.,ユーザーの保存中にエラーが発生しました。,사용자 저장 중 오류 발생.,保存用户时出错。
 register_have_account,Already have an account?,¿Ya tienes una cuenta?,Vous avez déjà un compte ?,Sie haben bereits ein Konto?,Hai già un account?,すでにアカウントをお持ちですか？,계정이 이미 있으신가요?,已有账号？
+preview_title,Preview,Vista Previa,Aperçu,Vorschau,Anteprima,プレビュー,미리보기,预览
+file_not_found,File not found:,Archivo no encontrado:,Fichier non trouvé:,Datei nicht gefunden:,File non trovato:,ファイルが見つかりません:,파일을 찾을 수 없습니다:,未找到文件:
