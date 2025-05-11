@@ -40,7 +40,7 @@ if ($uri === '/upload') {
 
     <main>
         <!-- Un formulario de ejemplo para subir el archivo ODS a transformar -->
-        <form action="/upload" method="post" enctype="multipart/form-data">
+        <form action="uploads" method="post" enctype="multipart/form-data">
             <div>
                 <label for="ods_file"><?php echo htmlspecialchars($translator->get('enter_ods_url')); ?></label>
                 <!-- Nota: Puedes ajustar la etiqueta según convenga, por ejemplo usar un input file o una URL -->
