@@ -1,39 +1,55 @@
 <?php
-// app/config.php
-
 /**
- * Configuración Global de la Aplicación
+ * Configuración global para el proyecto andrei | grey.
  *
- * Este archivo se encarga de establecer las configuraciones generales,
- * como las rutas base, los directorios y parámetros de entorno (por ejemplo, la zona horaria).
+ * Este archivo define constantes y configuraciones básicas utilizadas en toda la aplicación.
  */
 
-// Mostrar todos los errores (modo desarrollo). En producción, debe deshabilitarse.
+// Mostrar todos los errores (en entorno de desarrollo, en producción desactivar display_errors)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Definir el directorio base del proyecto (nivel raíz)
-define('BASE_PATH', dirname(__DIR__));
-
-// Definir la ruta para la base de datos SQLite.
-// Si la constante DB_PATH ya se definió en otro lugar, se mantiene; de lo contrario se define aquí.
-if (!defined('DB_PATH')) {
-    define('DB_PATH', BASE_PATH . '/storage/database.sqlite');
-}
-
-// Definir la ruta para la carpeta de uploads (para archivos ODS subidos)
-if (!defined('UPLOADS_PATH')) {
-    define('UPLOADS_PATH', BASE_PATH . '/public/uploads/');
-}
-
-// Configurar la zona horaria (ejemplo: Europa/Madrid para el territorio español)
+// Establecer la zona horaria
 date_default_timezone_set('Europe/Madrid');
 
-// Aquí puedes definir otras configuraciones globales, tales como parámetros para sesiones,
-// configuración de otros servicios o claves de API, etc.
+// Define la URL base de la aplicación, si no está ya definida
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/andrei-grey/andrei-grey/public');
+}
 
-// Ejemplo adicional: Configuración de una constante para la versión de la aplicación
-define('APP_VERSION', '1.0.0');
+// Idioma predeterminado
+if (!defined('DEFAULT_LANGUAGE')) {
+    define('DEFAULT_LANGUAGE', 'en');
+}
 
-define('BASE_URL', '/andrei-grey/andrei-grey/public');
-// Definir la URL base para el acceso a los archivos subidos
+// Otras constantes de configuración pueden agregarse a continuación...
+// Ejemplo: Definir rutas absolutas a directorios importantes
+if (!defined('APP_PATH')) {
+    define('APP_PATH', realpath(__DIR__));
+}
+if (!defined('ROOT_PATH')) {
+    define('ROOT_PATH', realpath(APP_PATH . '/../'));
+}
+if (!defined('STORAGE_PATH')) {
+    define('STORAGE_PATH', ROOT_PATH . '/storage');
+}
+if (!defined('UPLOADS_PATH')) {
+    define('UPLOADS_PATH', ROOT_PATH . '/public/uploads');
+}
+if (!defined('TRANSLATIONS_PATH')) {
+    define('TRANSLATIONS_PATH', ROOT_PATH . '/translations');
+}
+
+// Configuración extra (por ejemplo, para conexión a base de datos si fuera necesario)
+// if (!defined('DB_HOST')) {
+//     define('DB_HOST', 'localhost');
+// }
+// if (!defined('DB_NAME')) {
+//     define('DB_NAME', 'mi_base_de_datos');
+// }
+// if (!defined('DB_USER')) {
+//     define('DB_USER', 'root');
+// }
+// if (!defined('DB_PASS')) {
+//     define('DB_PASS', '');
+// }
